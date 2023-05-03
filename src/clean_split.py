@@ -51,58 +51,17 @@ def clean_split(path, output_path):
     df.to_csv("{op}{n}_clean.csv".format(op=output_path, n=name))
 
 
-def filter_ny(path, output_path):
+def filter_state(state, path, output_path):
     _, name_plus = path.split("/")
     name, _ = name_plus.split(".")
 
     df = pd.read_csv(path)
-    df_ny = df[df['state_abbr'] == 'NY']
-    df_ny.to_csv("{op}{n}_ny.csv".format(op=output_path, n=name))
+    df_state = df[df['state_abbr'] == state]
+    df_state.to_csv("{op}{n}_{s}.csv".format(op=output_path, n=name, s=state))
 
 
-def split_out_target_and_protected(path, output_root):
+def unique_state(path):
     df = pd.read_csv(path)
+    states = set(df['state_abbr'].unique())
+    return states    
 
-    target_df = df[['action_taken',
-                    'denial_reason_1', 
-                    'denial_reason_2', 
-                    'denial_reason_3']]
-
-    del df['denial_reason_1']
-    del df['denial_reason_2']
-    del df['denial_reason_3']
-    del df['action_taken']
-
-    g_df = df[['applicant_ethnicity',
-               'applicant_race_1',
-               'applicant_race_2',
-               'applicant_race_3',
-               'applicant_race_4',
-               'applicant_race_5',
-               'applicant_sex',
-               'co_applicant_ethnicity',
-               'co_applicant_race_1', 
-               'co_applicant_race_2', 
-               'co_applicant_race_3', 
-               'co_applicant_race_4', 
-               'co_applicant_race_5',
-               'co_applicant_sex']]
-
-    del df['applicant_ethnicity']
-    del df['applicant_race_1']
-    del df['applicant_race_2']
-    del df['applicant_race_3']
-    del df['applicant_race_4']
-    del df['applicant_race_5']
-    del df['co_applicant_ethnicity']
-    del df['co_applicant_race_1']
-    del df['co_applicant_race_2']
-    del df['co_applicant_race_3']
-    del df['co_applicant_race_4']
-    del df['co_applicant_race_5']
-    del df['applicant_sex']
-    del df['co_applicant_sex']
-
-    df.to_csv("{o}_features_ny.csv")
-    target_df.to_csv("{o}_target_ny.csv")
-    g_df.to_csv("{o}_protected.csv")
